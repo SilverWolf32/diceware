@@ -10,7 +10,7 @@
 import Foundation
 
 var wordcount = 5
-var list = "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt"
+var wordlistURL = URL(string: "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt")!
 
 func printUsage() {
 	print("""
@@ -28,8 +28,38 @@ if (CommandLine.arguments.count > 1) {
 	}
 }
 if (CommandLine.arguments.count > 2) {
-	list = CommandLine.arguments[2]
+	if let newList = URL(string: CommandLine.arguments[2]) {
+		wordlistURL = newList
+	} else {
+		printUsage()
+		print("(not a valid URL)")
+		exit(1)
+	}
 }
 
 print("Word count: \(wordcount)")
-print("List: \(list)")
+print("List: \(wordlistURL)")
+
+////////////////////////////////////////
+
+let homedir = FileManager.default.homeDirectoryForCurrentUser.path
+var cachepath = ""
+if FileManager.default.fileExists(atPath: homedir + "/Library/Caches") {
+	// we're probably on a Mac, use ~/Library/Caches
+	cachepath = homedir + "/Library/Caches/diceware/"
+} else {
+	// we're probably not on Mac, use ~/.cache instead
+	cachepath = homedir + "/.cache/diceware/"
+}
+
+cachepath += wordlistURL.lastPathComponent
+
+print("Checking for cached word list at \(cachepath)...", terminator: "")
+if FileManager.default.fileExists(atPath: cachepath) {
+	print("found")
+	print("Using cached word list")
+} else {
+	print("not found")
+	print("Fetching word list...")
+}
+
