@@ -32,13 +32,19 @@ if (CommandLine.arguments.count > 2) {
 		wordlistURL = newList
 	} else {
 		printUsage()
-		print("(not a valid URL)")
+		fputs("(not a valid URL)\n", stderr)
 		exit(1)
 	}
 }
 
-print("Word count: \(wordcount)")
-print("List: \(wordlistURL)")
+// make it a file:// URL if it's a local path
+if wordlistURL.scheme == nil {
+	// fputs("Word list seems to be a local path, so making it a file URL\n", stderr)
+	wordlistURL = URL(fileURLWithPath: wordlistURL.path)
+}
+
+// fputs("Word count: \(wordcount)\n", stderr)
+// fputs("List: \(wordlistURL)\n", stderr)
 
 ////////////////////////////////////////
 
@@ -52,14 +58,52 @@ if FileManager.default.fileExists(atPath: homedir + "/Library/Caches") {
 	cachepath = homedir + "/.cache/diceware/"
 }
 
-cachepath += wordlistURL.lastPathComponent
-
-print("Checking for cached word list at \(cachepath)...", terminator: "")
-if FileManager.default.fileExists(atPath: cachepath) {
-	print("found")
-	print("Using cached word list")
-} else {
-	print("not found")
-	print("Fetching word list...")
+do {
+	var filename: String? = wordlistURL.lastPathComponent
+	if filename! == "" {
+		print("Couldn't get last path component, using domain instead")
+		filename = wordlistURL.host
+		guard filename != nil else {
+			print("Couldn't get domain either!")
+			print("Are you \("sure".underlined()) this is a valid URL?")
+			exit(2)
+		}
+	}
+	cachepath += filename!
 }
 
+var wordlistContents = ""
+fputs("Checking for cached word list...", stderr)
+if FileManager.default.fileExists(atPath: cachepath) {
+	fputs("found\n", stderr)
+	fputs("Using cached word list from \(cachepath)\n", stderr)
+	do {
+		wordlistContents = try String(contentsOfFile: cachepath)
+	} catch let e {
+		fputs("Error reading cached file! \(e.localizedDescription)\n", stderr)
+		exit(2)
+	}
+} else {
+	fputs("not found\n", stderr)
+	fputs("Fetching word list from \(wordlistURL)...\n", stderr)
+	
+	// get the word list
+	do {
+		wordlistContents = try String(contentsOf: wordlistURL)
+	} catch let e {
+		fputs("Error fetching word list: \(e.localizedDescription)\n", stderr)
+		exit(2)
+	}
+	fputs("Done!\n", stderr)
+	
+	// cache the word list
+	fputs("Caching the word list for next time...\n", stderr)
+	do {
+		try wordlistContents.write(toFile: cachepath, atomically: true, encoding: .utf8)
+	} catch let e {
+		fputs("Error saving word list! \(e.localizedDescription)\n", stderr)
+	}
+	fputs("Saved word list to \(cachepath)\n", stderr)
+}
+
+// fputs("Word list contents: \n\(wordlistContents)\n", stderr)
