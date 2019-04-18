@@ -100,10 +100,10 @@ if FileManager.default.fileExists(atPath: cachepath) {
 	fputs("Caching the word list for next time...\n", stderr)
 	do {
 		try wordlistContents.write(toFile: cachepath, atomically: true, encoding: .utf8)
+		fputs("Saved word list to \(cachepath)\n", stderr)
 	} catch let e {
 		fputs("Error saving word list! \(e.localizedDescription)\n", stderr)
 	}
-	fputs("Saved word list to \(cachepath)\n", stderr)
 }
 
 // fputs("Word list contents: \n\(wordlistContents)\n", stderr)
