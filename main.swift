@@ -107,3 +107,20 @@ if FileManager.default.fileExists(atPath: cachepath) {
 }
 
 // fputs("Word list contents: \n\(wordlistContents)\n", stderr)
+
+////////////////////////////////////////
+
+// generate the word list
+var generator = DevRandomGenerator()
+var words: [String] = []
+for _ in 0..<wordcount {
+	// 6-sided die
+	let random6 = Int.random(in: 1...6, using: &generator)
+	
+	// this would not limit to 1...6
+	// let random6 = generator.next()
+	
+	print("\(random6)", terminator: " ")
+	// get a random word
+	
+}
