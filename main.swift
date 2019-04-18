@@ -110,17 +110,64 @@ if FileManager.default.fileExists(atPath: cachepath) {
 
 ////////////////////////////////////////
 
+// find the number of dice
+let lines = wordlistContents.components(separatedBy: "\n")
+let firstID = lines[0].components(separatedBy: "\t")[0]
+let nDice = firstID.count // number of digits = number of dice
+
 // generate the word list
 var generator = DevRandomGenerator()
 var words: [String] = []
 for _ in 0..<wordcount {
-	// 6-sided die
-	let random6 = Int.random(in: 1...6, using: &generator)
-	
 	// this would not limit to 1...6
 	// let random6 = generator.next()
 	
-	print("\(random6)", terminator: " ")
-	// get a random word
+	// this is not uniform, DO NOT USE! It's just for testing whether % affects uniformity -- turns out, yes it does.
+	// see https://crypto.stackexchange.com/questions/22767/does-using-modulo-affect-quality-of-randomness
+	// let random6 = generator.next() % 7 + 1
 	
+	// print("\(random6)", terminator: " ")
+	
+	// get X random numbers to use for passwords
+	var wordID = ""
+	for _ in 0..<nDice {
+		// 6-sided die
+		let random6 = Int.random(in: 1...6, using: &generator)
+		wordID += "\(random6)"
+	}
+	
+	// get a random word
+	let matchingLines = lines.filter {
+		let components = $0.components(separatedBy: "\t")
+		if components.count == 0 {
+			return false // it's probably a blank line
+		}
+		return components[0] == wordID
+	}
+	// print(matchingWords)
+	
+	// there should be one, and only one, match
+	if matchingLines.count == 0 {
+		fputs("*** Couldn't find word #\(wordID)! ***\n", __stderrp)
+		fputs("Your wordlist needs to have every possible sequence of \(nDice) numbers from 1 to 6.", stderr)
+		exit(3)
+	}
+	let components = matchingLines[0].components(separatedBy: "\t")
+	if components.count > 2 {
+		// can't get the actual word out of it
+		fputs("*** Couldn't find word on line #\(wordID)! ***\n", __stderrp)
+		fputs("Your wordlist needs to have the format '\(String(repeating: "#", count: nDice)) <tab> <word>'\n", stderr)
+		exit(3)
+	}
+	words.append(components[1])
 }
+
+// print out the words!
+for i in 0..<words.count {
+	print(words[i], terminator: "")
+	if i != words.count - 1 { // not the last word
+		print(" ", terminator: "")
+	}
+}
+print("") // complete with a newline
+
