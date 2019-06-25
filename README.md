@@ -26,7 +26,7 @@ diceware --help
 
 ## Randomness
 
-Diceware uses `/dev/random` to generate random numbers. These are then converted to a range from 1 to 6 using Swift's `Int.random(in: using:)` method (using a straight modulus would skew the distribution), and the results are used like dice to pick a word from the list.
+This implementation uses `/dev/random` to generate random numbers. These are then converted to a range from 1 to 6 using Swift's `Int.random(in: using:)` method (using a straight modulus would skew the distribution), and the results are used like dice to pick a word from the list.
 
 ```
 .----- die [1]
