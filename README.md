@@ -4,6 +4,12 @@ A simple tool to generate Diceware ([XKCD-style][xkcd]) passwords, written in Sw
 
 > Diceware **automatically connects to the Internet** to fetch a word list unless one is already cached, or a local file is specified on the command line. See "Word lists" below for more information.
 
+## Compilation
+
+You'll need Swift. You can get it from https://swift.org, or by installing Xcode if you're on a Mac.
+
+Then simply run `make`. There are no other dependencies.
+
 ## Usage
 
 ```
@@ -17,10 +23,6 @@ diceware --help
 |------------|--------------------------------|
 | # of words | 5                              |
 | Word list  | [EFF large wordlist][wordlist] |
-
-## Compilation
-
-Simply run `make`. There are no dependencies other than the Foundation framework that comes with Swift.
 
 ## Randomness
 
