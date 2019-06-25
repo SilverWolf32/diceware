@@ -36,7 +36,7 @@ The download only happens if the wordlist isn't already cached from the last run
 
 Wordlists are cached in `~/Library/Caches/diceware` on OS X, and `~/.cache/diceware` on other systems.
 
-##### Preventing the initial download
+#### Preventing the initial download
 
 To prevent the initial download, you can obtain the default wordlist from somewhere and put it in the cache folder ahead of time. You'll need to create the `diceware` folder to put it in. (Wordlist caches use the filename from the server or local file, or the domain name if there is no filename.)
 
