@@ -13,10 +13,10 @@ diceware word-count [wordlist-file-or-URL]
 diceware --help
 ```
 
-Defaults   |
------------|-------------------------------
-# of words | 5
-Word list  | [EFF large wordlist][wordlist]
+| Defaults   |                                |
+|------------|--------------------------------|
+| # of words | 5                              |
+| Word list  | [EFF large wordlist][wordlist] |
 
 ## Compilation
 
