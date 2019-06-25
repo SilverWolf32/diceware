@@ -1,9 +1,17 @@
+# OS X Finder makes these files in every folder
 .DS_Store
+
+# Debug symbols and object files
 *.dSYM
-*.sw?
 *.o
+
+# Vim swap files and session file
+# No Flash involved, so *.sw? isn't a problem
+*.sw?
 Session.vim
+
 # ctags file
 tags
+
 # this is the build product
 /diceware
