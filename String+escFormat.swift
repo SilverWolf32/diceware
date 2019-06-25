@@ -6,6 +6,9 @@
 //
 // Format a String using escape sequences
 //
+// This is free and unencumbered software released into the public domain.
+// See COPYING.md for more information.
+//
 // vim:set list noet fo=tcqr:
 //
 
