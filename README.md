@@ -39,6 +39,8 @@ This implementation uses `/dev/random` to generate random numbers. These are the
 
 The number of dice is determined by the file format. For example, the default wordlist has 5 digits, so 5 dice.
 
+Blank lines are ignored, as are lines beginning with `#`.
+
 ## Word lists
 
 The wordlist to use is **automatically downloaded** and cached. If no wordlist is given, it defaults to [the EFF's large wordlist][wordlist].

@@ -114,7 +114,17 @@ if FileManager.default.fileExists(atPath: cachepath) {
 ////////////////////////////////////////
 
 // find the number of dice
-let lines = wordlistContents.components(separatedBy: "\n")
+var lines = wordlistContents.components(separatedBy: "\n")
+// filter out blank lines and comments
+lines = lines.filter { (line) in
+	if line.count == 0 {
+		return false
+	}
+	if line.hasPrefix("#") {
+		return false
+	}
+	return true
+}
 let firstID = lines[0].components(separatedBy: "\t")[0]
 let nDice = firstID.count // number of digits = number of dice
 
