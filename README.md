@@ -28,7 +28,7 @@ Diceware uses `/dev/random` to generate your password. This is then converted to
 
 ## Word lists
 
-It **automatically downloads** and caches the wordlist provided. If no wordlist is given, it defaults to [the EFF's large wordlist][wordlist].
+The wordlist to use is **automatically downloaded** and cached. If no wordlist is given, it defaults to [the EFF's large wordlist][wordlist].
 
 The download only happens if the wordlist isn't already cached from the last run; this will be once per wordlist, unless you clear your caches.
 
