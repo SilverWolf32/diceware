@@ -1,6 +1,6 @@
 # Diceware
 
-A simple tool to generate Diceware passwords, written in Swift.
+A simple tool to generate Diceware ([XKCD-style][xkcd]) passwords, written in Swift.
 
 > Diceware **automatically connects to the Internet** to fetch a word list unless one is already cached, or a local file is specified on the command line. See "Word lists" below for more information.
 
@@ -35,3 +35,4 @@ The download only happens if the wordlist isn't already cached from the last run
 Wordlists are cached in `~/Library/Caches/diceware` on OS X, and `~/.cache/diceware` on other systems.
 
 [wordlist]: https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
+[xkcd]: https://xkcd.com/936/
