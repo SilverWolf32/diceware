@@ -26,7 +26,18 @@ diceware --help
 
 ## Randomness
 
-Diceware uses `/dev/random` to generate your password. This is then converted to a range from 1 to 6 using Swift's `Int.random(in: using:)` method (using a straight modulus would skew the distribution).
+Diceware uses `/dev/random` to generate random numbers. These are then converted to a range from 1 to 6 using Swift's `Int.random(in: using:)` method (using a straight modulus would skew the distribution), and the results are used like dice to pick a word from the list.
+
+```
+.----- die [1]
+|.---- die [1]
+||.--- die [2]
+|||.-- die [5]
+||||.- die [4]
+11254	affidavit
+```
+
+The number of dice is determined by the file format. For example, the default wordlist has 5 digits, so 5 dice.
 
 ## Word lists
 
