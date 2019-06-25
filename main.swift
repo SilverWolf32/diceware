@@ -152,7 +152,7 @@ for _ in 0..<wordcount {
 	// there should be one, and only one, match
 	if matchingLines.count == 0 {
 		fputs("*** Couldn't find word #\(wordID)! ***\n", __stderrp)
-		fputs("Your wordlist needs to have every possible sequence of \(nDice) numbers from 1 to 6.", stderr)
+		fputs("Your wordlist needs to have every possible sequence of \(nDice) numbers from 1 to 6.\n", stderr)
 		exit(3)
 	}
 	let components = matchingLines[0].components(separatedBy: "\t")
