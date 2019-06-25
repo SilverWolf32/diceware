@@ -24,7 +24,7 @@ diceware --help
 | # of words | 5                              |
 | Word list  | [EFF large wordlist][wordlist] |
 
-## Randomness
+## Generation
 
 This implementation uses `/dev/random` to generate random numbers. These are then converted to a range from 1 to 6 using Swift's `Int.random(in: using:)` method (using a straight modulus would skew the distribution), and the results are used like dice to pick a word from the list.
 
@@ -39,7 +39,7 @@ This implementation uses `/dev/random` to generate random numbers. These are the
 
 The number of dice is determined by the file format. For example, the default wordlist has 5 digits, so 5 dice.
 
-Blank lines are ignored, as are lines beginning with `#`.
+The word list must have the format `12345<tab>word`. Blank lines are ignored, as are lines beginning with `#`.
 
 ## Word lists
 
