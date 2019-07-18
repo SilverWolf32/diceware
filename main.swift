@@ -52,28 +52,26 @@ if wordlistURL.scheme == nil {
 ////////////////////////////////////////
 
 let homedir = FileManager.default.homeDirectoryForCurrentUser.path
-var cachepath = ""
+var cachedir = ""
 if FileManager.default.fileExists(atPath: homedir + "/Library/Caches") {
 	// we're probably on a Mac, use ~/Library/Caches
-	cachepath = homedir + "/Library/Caches/diceware/"
+	cachedir = homedir + "/Library/Caches/diceware/"
 } else {
 	// we're probably not on Mac, use ~/.cache instead
-	cachepath = homedir + "/.cache/diceware/"
+	cachedir = homedir + "/.cache/diceware/"
 }
 
-do {
-	var filename: String? = wordlistURL.lastPathComponent
-	if filename! == "" {
-		print("Couldn't get last path component, using domain instead")
-		filename = wordlistURL.host
-		guard filename != nil else {
-			print("Couldn't get domain either!")
-			print("Are you \("sure".underlined()) this is a valid URL?")
-			exit(2)
-		}
+var filename: String? = wordlistURL.lastPathComponent
+if filename! == "" {
+	print("Couldn't get last path component, using domain instead")
+	filename = wordlistURL.host
+	guard filename != nil else {
+		print("Couldn't get domain either!")
+		print("Are you \("sure".underlined()) this is a valid URL?")
+		exit(2)
 	}
-	cachepath += filename!
 }
+var cachepath = cachedir + filename!
 
 var wordlistContents = ""
 fputs("Checking for cached word list...", stderr)
@@ -102,6 +100,9 @@ if FileManager.default.fileExists(atPath: cachepath) {
 	// cache the word list
 	fputs("Caching the word list for next time...\n", stderr)
 	do {
+		if !FileManager.default.fileExists(atPath: cachedir) {
+			try FileManager.default.createDirectory(atPath: cachedir, withIntermediateDirectories: true, attributes: nil)
+		}
 		try wordlistContents.write(toFile: cachepath, atomically: true, encoding: .utf8)
 		fputs("Saved word list to \(cachepath)\n", stderr)
 	} catch let e {
