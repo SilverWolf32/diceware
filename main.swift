@@ -161,14 +161,14 @@ for _ in 0..<wordcount {
 	
 	// there should be one, and only one, match
 	if matchingLines.count == 0 {
-		fputs("*** Couldn't find word #\(wordID)! ***\n", __stderrp)
+		fputs("*** Couldn't find word #\(wordID)! ***\n", stderr)
 		fputs("Your wordlist needs to have every possible sequence of \(nDice) numbers from 1 to 6.\n", stderr)
 		exit(3)
 	}
 	let components = matchingLines[0].components(separatedBy: "\t")
 	if components.count > 2 {
 		// can't get the actual word out of it
-		fputs("*** Couldn't find word on line #\(wordID)! ***\n", __stderrp)
+		fputs("*** Couldn't find word on line #\(wordID)! ***\n", stderr)
 		fputs("Your wordlist needs to have the format '\(String(repeating: "#", count: nDice)) <tab> <word>'\n", stderr)
 		exit(3)
 	}
