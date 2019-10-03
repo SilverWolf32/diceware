@@ -11,6 +11,7 @@
 //
 
 import Foundation
+import FoundationNetworking // required for Swift 5.1
 
 var wordcount = 5
 var wordlistURL = URL(string: "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt")!
