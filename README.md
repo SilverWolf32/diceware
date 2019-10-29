@@ -2,6 +2,8 @@
 
 A simple tool to generate Diceware ([XKCD-style][xkcd]) passwords, written in Swift.
 
+> #### Please note:
+>
 > Diceware **automatically connects to the Internet** to fetch a word list unless one is already cached, or a local file is specified on the command line. See "Word lists" below for more information.
 
 ## Compilation
@@ -26,7 +28,7 @@ diceware --help
 
 ## Generation
 
-This implementation uses `/dev/random` to generate random numbers. These are then converted to a range from 1 to 6 using Swift's `Int.random(in: using:)` method (using a straight modulus would skew the distribution), and the results are used like dice to pick a word from the list.
+Random numbers come from `/dev/random`. These are then converted to a range from 1 to 6 using Swift's `Int.random(in: using:)` method (using a straight modulus would skew the distribution), and the results are used like dice to pick a word from the list.
 
 ```
 .----- die [1]
