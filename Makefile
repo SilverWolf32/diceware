@@ -7,7 +7,7 @@
 #
 
 diceware: *.swift
-	swiftc -g -lncurses -o diceware *.swift
+	swiftc -g -o diceware *.swift
 
 clean:
 	rm -f diceware
