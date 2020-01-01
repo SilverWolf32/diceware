@@ -14,7 +14,7 @@ import Foundation
 import FoundationNetworking // required for Swift 5.1
 
 var wordcount = 5
-var wordlistURL = URL(string: "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt")!
+var wordlistURLs: [URL] = []
 
 func printUsage() {
 	print("""
@@ -23,92 +23,105 @@ func printUsage() {
 }
 
 // handle the arguments
-if (CommandLine.arguments.count > 1) {
-	if let tmpWordcount = Int(CommandLine.arguments[1]) {
+var argv = CommandLine.arguments // so we can remove things as we use them
+if argv.count > 1 {
+	if let tmpWordcount = Int(argv[1]) {
 		wordcount = tmpWordcount
 	} else {
 		printUsage()
 		exit(1)
 	}
+	argv.remove(at: 1)
 }
-if (CommandLine.arguments.count > 2) {
-	if let newList = URL(string: CommandLine.arguments[2]) {
-		wordlistURL = newList
+while argv.count > 1 {
+	if let newList = URL(string: argv[1]) {
+		wordlistURLs.append(newList)
 	} else {
 		printUsage()
-		fputs("(not a valid URL)\n", stderr)
+		fputs("(\(argv[1]) is not a valid URL)\n", stderr)
 		exit(1)
 	}
+	argv.remove(at: 1)
 }
 
-// make it a file:// URL if it's a local path
-if wordlistURL.scheme == nil {
-	// fputs("Word list seems to be a local path, so making it a file URL\n", stderr)
-	wordlistURL = URL(fileURLWithPath: wordlistURL.path)
+if wordlistURLs.count == 0 { // no wordlists provided
+	wordlistURLs.append(URL(string: "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt")!)
 }
 
-// fputs("Word count: \(wordcount)\n", stderr)
-// fputs("List: \(wordlistURL)\n", stderr)
-
-////////////////////////////////////////
-
-let homedir = FileManager.default.homeDirectoryForCurrentUser.path
-var cachedir = ""
-if FileManager.default.fileExists(atPath: homedir + "/Library/Caches") {
-	// we're probably on a Mac, use ~/Library/Caches
-	cachedir = homedir + "/Library/Caches/diceware/"
-} else {
-	// we're probably not on Mac, use ~/.cache instead
-	cachedir = homedir + "/.cache/diceware/"
-}
-
-var filename: String? = wordlistURL.lastPathComponent
-if filename! == "" {
-	print("Couldn't get last path component, using domain instead")
-	filename = wordlistURL.host
-	guard filename != nil else {
-		print("Couldn't get domain either!")
-		print("Are you \("sure".underlined()) this is a valid URL?")
-		exit(2)
+var wordlistsContents: [String] = []
+for url in wordlistURLs {
+	var wordlistURL = url
+	// make it a file:// URL if it's a local path
+	if wordlistURL.scheme == nil {
+		// fputs("Word list seems to be a local path, so making it a file URL\n", stderr)
+		wordlistURL = URL(fileURLWithPath: wordlistURL.path)
 	}
-}
-var cachepath = cachedir + filename!
-
-var wordlistContents = ""
-fputs("Checking for cached word list...", stderr)
-if FileManager.default.fileExists(atPath: cachepath) {
-	fputs("found\n", stderr)
-	fputs("Using cached word list from \(cachepath)\n", stderr)
-	do {
-		wordlistContents = try String(contentsOfFile: cachepath)
-	} catch let e {
-		fputs("Error reading cached file! \(e.localizedDescription)\n", stderr)
-		exit(2)
-	}
-} else {
-	fputs("not found\n", stderr)
-	fputs("Fetching word list from \(wordlistURL)...\n", stderr)
 	
-	// get the word list
-	do {
-		wordlistContents = try String(contentsOf: wordlistURL)
-	} catch let e {
-		fputs("Error fetching word list: \(e.localizedDescription)\n", stderr)
-		exit(2)
-	}
-	fputs("Done!\n", stderr)
+	// fputs("Word count: \(wordcount)\n", stderr)
+	// fputs("List: \(wordlistURL)\n", stderr)
 	
-	// cache the word list
-	fputs("Caching the word list for next time...\n", stderr)
-	do {
-		if !FileManager.default.fileExists(atPath: cachedir) {
-			try FileManager.default.createDirectory(atPath: cachedir, withIntermediateDirectories: true, attributes: nil)
+	////////////////////////////////////////
+	
+	let homedir = FileManager.default.homeDirectoryForCurrentUser.path
+	var cachedir = ""
+	if FileManager.default.fileExists(atPath: homedir + "/Library/Caches") {
+		// we're probably on a Mac, use ~/Library/Caches
+		cachedir = homedir + "/Library/Caches/diceware/"
+	} else {
+		// we're probably not on Mac, use ~/.cache instead
+		cachedir = homedir + "/.cache/diceware/"
+	}
+	
+	var filename: String? = wordlistURL.lastPathComponent
+	if filename! == "" {
+		print("Couldn't get last path component, using domain instead")
+		filename = wordlistURL.host
+		guard filename != nil else {
+			print("Couldn't get domain either!")
+			print("Are you \("sure".underlined()) this is a valid URL?")
+			exit(2)
 		}
-		try wordlistContents.write(toFile: cachepath, atomically: true, encoding: .utf8)
-		fputs("Saved word list to \(cachepath)\n", stderr)
-	} catch let e {
-		fputs("Error saving word list! \(e.localizedDescription)\n", stderr)
 	}
+	let cachepath = cachedir + filename!
+	
+	var thisWordlistContents = ""
+	fputs("Checking for cached word list...", stderr)
+	if FileManager.default.fileExists(atPath: cachepath) {
+		fputs("found\n", stderr)
+		fputs("Using cached word list from \(cachepath)\n", stderr)
+		do {
+			thisWordlistContents = try String(contentsOfFile: cachepath)
+		} catch let e {
+			fputs("Error reading cached file! \(e.localizedDescription)\n", stderr)
+			exit(2)
+		}
+	} else {
+		fputs("not found\n", stderr)
+		fputs("Fetching word list from \(wordlistURL)...\n", stderr)
+		
+		// get the word list
+		do {
+			thisWordlistContents = try String(contentsOf: wordlistURL)
+		} catch let e {
+			fputs("Error fetching word list: \(e.localizedDescription)\n", stderr)
+			exit(2)
+		}
+		fputs("Done!\n", stderr)
+		
+		// cache the word list
+		fputs("Caching the word list for next time...\n", stderr)
+		do {
+			if !FileManager.default.fileExists(atPath: cachedir) {
+				try FileManager.default.createDirectory(atPath: cachedir, withIntermediateDirectories: true, attributes: nil)
+			}
+			try thisWordlistContents.write(toFile: cachepath, atomically: true, encoding: .utf8)
+			fputs("Saved word list to \(cachepath)\n", stderr)
+		} catch let e {
+			fputs("Error saving word list! \(e.localizedDescription)\n", stderr)
+		}
+	}
+	
+	wordlistsContents.append(thisWordlistContents)
 }
 
 // fputs("Word list contents: \n\(wordlistContents)\n", stderr)
@@ -116,24 +129,31 @@ if FileManager.default.fileExists(atPath: cachepath) {
 ////////////////////////////////////////
 
 // find the number of dice
-var lines = wordlistContents.components(separatedBy: "\n")
-// filter out blank lines and comments
-lines = lines.filter { (line) in
-	if line.count == 0 {
-		return false
+var lines: [[String]] = []
+for wordlist in wordlistsContents {
+	var thisWordlistLines = wordlist.components(separatedBy: "\n")
+	// filter out blank lines and comments
+	thisWordlistLines = thisWordlistLines.filter { (line) in
+		if line.count == 0 {
+			return false
+		}
+		if line.hasPrefix("#") {
+			return false
+		}
+		return true
 	}
-	if line.hasPrefix("#") {
-		return false
-	}
-	return true
+	lines.append(thisWordlistLines)
 }
-let firstID = lines[0].components(separatedBy: "\t")[0]
+let firstID = lines[0][0].components(separatedBy: "\t")[0]
 let nDice = firstID.count // number of digits = number of dice
 
 // generate the word list
 var generator = DevRandomGenerator()
 var words: [String] = []
 for _ in 0..<wordcount {
+	// pick a wordlist to use for this word
+	let wordlistIndex = Int.random(in: 0..<lines.count, using: &generator)
+	
 	// this would not limit to 1...6
 	// let random6 = generator.next()
 	
@@ -152,7 +172,7 @@ for _ in 0..<wordcount {
 	}
 	
 	// get a random word
-	let matchingLines = lines.filter {
+	let matchingLines = lines[wordlistIndex].filter {
 		let components = $0.components(separatedBy: "\t")
 		if components.count == 0 {
 			return false // it's probably a blank line
