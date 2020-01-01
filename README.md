@@ -16,10 +16,12 @@ Then simply run `make`. There are no other dependencies.
 
 ```
 diceware
-diceware word-count [wordlist-file-or-URL]
+diceware word-count [wordlist-file-or-URL] ...
 
 diceware --help
 ```
+
+You can supply one or more wordlists. For each word a wordlist will be picked at random, and then a word will be picked as explained below.
 
 | Defaults   |                                |
 |------------|--------------------------------|
